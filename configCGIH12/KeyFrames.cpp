@@ -32,7 +32,7 @@ void DoMovement();
 void Animation();
 
 // Window dimensions
-const GLuint WIDTH = 800, HEIGHT = 600;
+const GLuint WIDTH = 1600, HEIGHT = 900;
 int SCREEN_WIDTH, SCREEN_HEIGHT;
 
 // Camera
@@ -120,6 +120,8 @@ typedef struct _frame {
 	
 	float rotDog;
 	float rotDogInc;
+	float head;
+	float headInc;
 	float dogPosX;
 	float dogPosY;
 	float dogPosZ;
@@ -144,6 +146,8 @@ void saveFrame(void)
 	KeyFrame[FrameIndex].dogPosY = dogPosY;
 	KeyFrame[FrameIndex].dogPosZ = dogPosZ;
 
+	KeyFrame[FrameIndex].head = head;
+
 	KeyFrame[FrameIndex].rotDog = rotDog;
 
 
@@ -156,6 +160,8 @@ void resetElements(void)
 	dogPosY = KeyFrame[0].dogPosY;
 	dogPosZ = KeyFrame[0].dogPosZ;
 
+	head = KeyFrame[0].head;
+
 	rotDog = KeyFrame[0].rotDog;
 
 }
@@ -165,6 +171,8 @@ void interpolation(void)
 	KeyFrame[playIndex].incX = (KeyFrame[playIndex + 1].dogPosX - KeyFrame[playIndex].dogPosX) / i_max_steps;
 	KeyFrame[playIndex].incY = (KeyFrame[playIndex + 1].dogPosY - KeyFrame[playIndex].dogPosY) / i_max_steps;
 	KeyFrame[playIndex].incZ = (KeyFrame[playIndex + 1].dogPosZ - KeyFrame[playIndex].dogPosZ) / i_max_steps;
+
+	KeyFrame[playIndex].headInc = (KeyFrame[playIndex + 1].head - KeyFrame[playIndex].head) / i_max_steps;
 
 	KeyFrame[playIndex].rotDogInc = (KeyFrame[playIndex + 1].rotDog - KeyFrame[playIndex].rotDog) / i_max_steps;
 
@@ -248,6 +256,8 @@ int main()
 		KeyFrame[i].incX = 0;
 		KeyFrame[i].incY = 0;
 		KeyFrame[i].incZ = 0;
+		KeyFrame[i].head = 0;
+		KeyFrame[i].headInc = 0;
 		KeyFrame[i].rotDog = 0;
 		KeyFrame[i].rotDogInc = 0;
 	}
@@ -389,7 +399,7 @@ int main()
 		//Head
 		model = modelTemp;
 		model = glm::translate(model, glm::vec3(0.0f, 0.093f, 0.208f));
-		model = glm::rotate(model, glm::radians(head), glm::vec3(0.0f, 0.0f, 1.0f));
+		model = glm::rotate(model, glm::radians(head), glm::vec3(0.0f, 1.0f, 0.0f));
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 		HeadDog.Draw(lightingShader);
 		//Tail 
@@ -498,12 +508,12 @@ void DoMovement()
 
 	if (keys[GLFW_KEY_4])
 	{
-
+		head += 1.0f;
 	}
 
-	if (keys[GLFW_KEY_4])
+	if (keys[GLFW_KEY_5])
 	{
-
+		head -= 1.0f;
 	}
 			
 	if (keys[GLFW_KEY_H])
@@ -677,6 +687,8 @@ void Animation() {
 			dogPosX += KeyFrame[playIndex].incX;
 			dogPosY += KeyFrame[playIndex].incY;
 			dogPosZ += KeyFrame[playIndex].incZ;
+
+			head += KeyFrame[playIndex].headInc;
 
 			rotDog += KeyFrame[playIndex].rotDogInc;
 
